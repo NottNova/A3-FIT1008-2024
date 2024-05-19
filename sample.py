@@ -13,9 +13,13 @@ class Mode1Navigator:
         """
         self.sites = sorted(sites, key=lambda site: site.gold / site.guardians if site.guardians > 0 else float('inf'), reverse=True)
         self.adventurers = adventurers
-        self.s_dict = LinearProbeTable() # for easy access
+        self.sites_dict = {site.name: site for site in sites}  # Dictionary for quick lookup
+        self.s_dict = LinearProbeTable()
+
         for site in sites:
             self.s_dict.__setitem__(site.name, site)
+
+
 
     def select_sites(self) -> list[tuple[Land, int]]:
         """
@@ -49,7 +53,7 @@ class Mode1Navigator:
                 if remaining_adventurers <= 0:
                     break
 
-                elif site.guardians > 0:
+                if site.guardians > 0:
                     ci = min(site.guardians, remaining_adventurers)
                     reward = min((ci * site.gold) / site.guardians, site.gold)
                     total_reward += reward
@@ -63,9 +67,8 @@ class Mode1Navigator:
         """
         Student-TODO: Best/Worst Case
         """
-
-        if self.s_dict.__contains__(land.name) == True:
-            site = self.s_dict.__getitem__(land.name)
+        if land.name in self.sites_dict:
+            site = self.sites_dict[land.name]
             site.gold = new_reward
             site.guardians = new_guardians
         else:
@@ -83,8 +86,4 @@ if __name__ == '__main__':
 
     nav = Mode1Navigator(sites,200)
 
-    print(nav.sites_dict.get("A"))
-    nav.update_site(a, 55.8, 22)
-    print(nav.sites_dict.get("A"))
-    print(nav.s_dict.__getitem__("A"))
-    print(nav.sites)
+    print(nav.sites_dict)
