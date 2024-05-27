@@ -92,6 +92,14 @@ class MaxHeap(Generic[T]):
             self.sink(k)
         return self
 
+    def is_empty(self):
+        """Checks if the length of the heap is empty
+        Complexity - Best and Worst - O(1) - Cost of comparison
+        """
+        if self.length == 0:
+            return True
+        else:
+            return False
 
 if __name__ == '__main__':
     items = [ int(x) for x in input('Enter a list of numbers: ').strip().split() ]

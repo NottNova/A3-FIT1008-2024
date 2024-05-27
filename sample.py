@@ -1,9 +1,14 @@
 from landsites import Land
 from data_structures.hash_table import LinearProbeTable
-
+from data_structures.bst import BinarySearchTree
+from data_structures.heap import MaxHeap
 class Mode1Navigator:
     """
-    Student-TODO: short paragraph as per
+    Student-TODO:
+    Initializes the Mode 1 Navigator with the given land sites and number of adventurers.
+
+    sites - Lists were used as it is iterable and
+
     https://edstem.org/au/courses/14293/lessons/46720/slides/318306
     """
 
@@ -11,14 +16,23 @@ class Mode1Navigator:
         """
         Student-TODO: Best/Worst Case
         """
-        self.sites = sorted(sites, key=lambda site: site.gold / site.guardians if site.guardians > 0 else float('inf'), reverse=True)
+        self.sites = []
         self.adventurers = adventurers
-        self.sites_dict = {site.name: site for site in sites}  # Dictionary for quick lookup
-        self.s_dict = LinearProbeTable()
+        self.sites_BST = BinarySearchTree()
 
         for site in sites:
-            self.s_dict.__setitem__(site.name, site)
+            self.sites_BST.__setitem__(site.name, site)
 
+        heap = MaxHeap(len(sites))
+
+        for site in sites:
+            ratio_key = site.gold / site.guardians
+            key_val_pair = (ratio_key, site)
+            heap.add(key_val_pair)
+
+        while heap.is_empty() == False: # Estabished new is_empty method in the heap data structure
+            max_val = heap.get_max()
+            self.sites.append(max_val[1])
 
 
     def select_sites(self) -> list[tuple[Land, int]]:
@@ -28,11 +42,12 @@ class Mode1Navigator:
         selected_sites = []
         remaining_adventurers = self.adventurers
 
+
         for site in self.sites:
             if remaining_adventurers <= 0:
                 break
 
-            if site.guardians > 0:
+            elif site.guardians > 0:
                 ci = min(site.guardians, remaining_adventurers)
                 selected_sites.append((site, ci))
                 remaining_adventurers -= ci
@@ -53,7 +68,7 @@ class Mode1Navigator:
                 if remaining_adventurers <= 0:
                     break
 
-                if site.guardians > 0:
+                elif site.guardians > 0:
                     ci = min(site.guardians, remaining_adventurers)
                     reward = min((ci * site.gold) / site.guardians, site.gold)
                     total_reward += reward
@@ -67,8 +82,9 @@ class Mode1Navigator:
         """
         Student-TODO: Best/Worst Case
         """
-        if land.name in self.sites_dict:
-            site = self.sites_dict[land.name]
+
+        if self.sites_BST.__contains__(land.name) == True:
+            site = self.sites_BST.__getitem__(land.name)
             site.gold = new_reward
             site.guardians = new_guardians
         else:
@@ -86,4 +102,5 @@ if __name__ == '__main__':
 
     nav = Mode1Navigator(sites,200)
 
-    print(nav.sites_dict)
+
+
